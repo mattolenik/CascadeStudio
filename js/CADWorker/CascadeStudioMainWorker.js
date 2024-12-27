@@ -1,7 +1,20 @@
+import './CascadeStudioFileUtils.js';
+
+import * as THREE from 'three';
+import './CascadeStudioStandardLibrary.js';
+import './CascadeStudioShapeToMesh.js';
+import opentype from 'opentype.js'
+import potpack from 'potpack';
+import initOpenCascade from "opencascade.js/dist/node.js";
+
+
 // Define the persistent global variables
-var oc = null, externalShapes = {}, sceneShapes = [],
+var externalShapes = {}, sceneShapes = [],
   GUIState, fullShapeEdgeHashes = {}, fullShapeFaceHashes = {},
   currentShape;
+
+const oc = await initOpenCascade();
+
 
 // Capture Logs and Errors and forward them to the main thread
 let realConsoleLog   = console.log;
@@ -21,14 +34,6 @@ console.error = function (err, url, line, colno, errorObj) {
   realConsoleError.apply(console, arguments);
 }; // This is actually accessed via worker.onerror in the main thread
 
-// Import the set of scripts we'll need to perform all the CAD operations
-importScripts(
-  '../../node_modules/three/build/three.min.js',
-  './CascadeStudioStandardLibrary.js',
-  './CascadeStudioShapeToMesh.js',
-  '../../node_modules/opencascade.js/dist/opencascade.wasm.js',
-  '../../node_modules/opentype.js/dist/opentype.min.js',
-  '../../node_modules/potpack/index.js');
 
 // Preload the Various Fonts that are available via Text3D
 var preloadedFonts = ['../../fonts/Roboto.ttf',
@@ -44,26 +49,26 @@ preloadedFonts.forEach((fontURL) => {
 
 // Load the full Open Cascade Web Assembly Module
 var messageHandlers = {};
-new opencascade({
-  locateFile(path) {
-    if (path.endsWith('.wasm')) {
-      return "../../node_modules/opencascade.js/dist/opencascade.wasm.wasm";
-    }
-    return path;
-  }
-}).then((openCascade) => {
-  // Register the "OpenCascade" WebAssembly Module under the shorthand "oc"
-  oc = openCascade;
+// new opencascade({
+//   locateFile(path) {
+//     if (path.endsWith('.wasm')) {
+//       return "../../node_modules/opencascade.js/dist/opencascade.wasm.wasm";
+//     }
+//     return path;
+//   }
+// }).then((openCascade) => {
+//   // Register the "OpenCascade" WebAssembly Module under the shorthand "oc"
+//   oc = openCascade;
 
-  // Ping Pong Messages Back and Forth based on their registration in messageHandlers
+//   // Ping Pong Messages Back and Forth based on their registration in messageHandlers
   onmessage = function (e) {
     let response = messageHandlers[e.data.type](e.data.payload);
     if (response) { postMessage({ "type": e.data.type, payload: response }); };
   }
 
-  // Initial Evaluation after everything has been loaded...
+//   // Initial Evaluation after everything has been loaded...
   postMessage({ type: "startupCallback" });
-});
+// });
 
 /** This function evaluates `payload.code` (the contents of the Editor Window)
  *  and sets the GUI State. */
@@ -133,6 +138,3 @@ function combineAndRenderShapes(payload) {
   postMessage({ "type": "Progress", "payload": { "opNumber": opNumber, "opType": "" } });
 }
 messageHandlers["combineAndRenderShapes"] = combineAndRenderShapes;
-
-// Import the File IO Utilities
-importScripts('./CascadeStudioFileUtils.js');
