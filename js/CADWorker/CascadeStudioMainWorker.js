@@ -1,11 +1,9 @@
-import './CascadeStudioFileUtils.js';
+// import './CascadeStudioFileUtils.js';
 
-import * as THREE from 'three';
 import './CascadeStudioStandardLibrary.js';
 import './CascadeStudioShapeToMesh.js';
 import opentype from 'opentype.js'
-import potpack from 'potpack';
-import initOpenCascade from "opencascade.js/dist/node.js";
+import initOpenCascade from "opencascade.js";
 
 
 // Define the persistent global variables

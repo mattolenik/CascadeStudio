@@ -1,3 +1,5 @@
+import potpack from 'potpack';
+
 function LengthOfCurve(geomAdaptor, UMin, UMax, segments = 5) {
   let point1 = new THREE.Vector3(), point2 = new THREE.Vector3(), arcLength = 0, gpPnt = new oc.gp_Pnt();
   for (let s = UMin; s <= UMax; s += (UMax - UMin) / segments){
