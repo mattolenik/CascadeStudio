@@ -1,6 +1,7 @@
 import potpack from 'potpack';
+import * as THREE from 'three';
 
-function LengthOfCurve(geomAdaptor, UMin, UMax, segments = 5) {
+export function LengthOfCurve(geomAdaptor, UMin, UMax, segments = 5) {
   let point1 = new THREE.Vector3(), point2 = new THREE.Vector3(), arcLength = 0, gpPnt = new oc.gp_Pnt();
   for (let s = UMin; s <= UMax; s += (UMax - UMin) / segments){
     geomAdaptor.D0(s, gpPnt);
@@ -15,7 +16,7 @@ function LengthOfCurve(geomAdaptor, UMin, UMax, segments = 5) {
   return arcLength;
 }
 
-function ShapeToMesh(shape, maxDeviation, fullShapeEdgeHashes, fullShapeFaceHashes) {
+export function ShapeToMesh(oc, shape, maxDeviation, fullShapeEdgeHashes, fullShapeFaceHashes) {
     let facelist = [], edgeList = [];
     try {
       shape = new oc.TopoDS_Shape(shape);

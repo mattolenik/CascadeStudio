@@ -1,5 +1,8 @@
 import * as THREE from 'three';
-import { STLExporter, OBJExporter, DragControls, OrbitControls, TransformControls } from 'three/examples/jsm/Addons.js'
+import { DragControls, } from 'three/examples/jsm/controls/DragControls.js'
+import { OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js'
+// import { STLExporter, OBJExporter, DragControls, OrbitControls, TransformControls } from 'three/examples/jsm/Addons.js'
 // This file governs the 3D Viewport which displays the 3D Model
 // It is also in charge of saving to STL and OBJ
 
@@ -374,7 +377,7 @@ export class CascadeEnvironment {
     };
 
     // Patch in the Handle Gizmo Code
-    initializeHandleGizmos(this);
+    initializeHandleGizmos(this, messageHandlers);
 
     this.animate();
     // Initialize the view in-case we're lazy rendering...
@@ -383,7 +386,7 @@ export class CascadeEnvironment {
 }
 
 /** Adds Handle Gizmo Functionality to the Cascade View */
-function initializeHandleGizmos(threejsViewport){
+function initializeHandleGizmos(threejsViewport, messageHandlers){
   /** Create a Transformation Gizmo in the Scene View */
   messageHandlers["createTransformHandle"] = function (payload) {
     if (payload.lineAndColumn[0] <= 0) {

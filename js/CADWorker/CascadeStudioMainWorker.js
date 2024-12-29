@@ -1,17 +1,16 @@
 // import './CascadeStudioFileUtils.js';
 
-import './CascadeStudioStandardLibrary.js';
 import './CascadeStudioShapeToMesh.js';
-import opentype from 'opentype.js'
-import initOpenCascade from "opencascade.js";
+// import opentype from 'opentype.js'
+import initOpenCascade from "opencascade.js/dist/opencascade.full.wasm"
+const oc = await initOpenCascade();
 
 
 // Define the persistent global variables
 var externalShapes = {}, sceneShapes = [],
   GUIState, fullShapeEdgeHashes = {}, fullShapeFaceHashes = {},
   currentShape;
-
-const oc = await initOpenCascade();
+var messageHandlers = {};
 
 
 // Capture Logs and Errors and forward them to the main thread
@@ -34,19 +33,18 @@ console.error = function (err, url, line, colno, errorObj) {
 
 
 // Preload the Various Fonts that are available via Text3D
-var preloadedFonts = ['../../fonts/Roboto.ttf',
-  '../../fonts/Papyrus.ttf', '../../fonts/Consolas.ttf'];
-var fonts = {};
-preloadedFonts.forEach((fontURL) => {
-  opentype.load(fontURL, function (err, font) {
-    if (err) { console.log(err); }
-    let fontName = fontURL.split("./fonts/")[1].split(".ttf")[0];
-    fonts[fontName] = font;
-  });
-});
+// var preloadedFonts = ['../../fonts/Roboto.ttf',
+//   '../../fonts/Papyrus.ttf', '../../fonts/Consolas.ttf'];
+// var fonts = {};
+// preloadedFonts.forEach((fontURL) => {
+//   opentype.load(fontURL, function (err, font) {
+//     if (err) { console.log(err); }
+//     let fontName = fontURL.split("./fonts/")[1].split(".ttf")[0];
+//     fonts[fontName] = font;
+//   });
+// });
 
 // Load the full Open Cascade Web Assembly Module
-var messageHandlers = {};
 // new opencascade({
 //   locateFile(path) {
 //     if (path.endsWith('.wasm')) {
@@ -125,7 +123,7 @@ function combineAndRenderShapes(payload) {
 
     // Use ShapeToMesh to output a set of triangulated faces and discretized edges to the 3D Viewport
     postMessage({ "type": "Progress", "payload": { "opNumber": opNumber++, "opType": "Triangulating Faces" } });
-    let facesAndEdges = ShapeToMesh(currentShape,
+    let facesAndEdges = ShapeToMesh(oc, currentShape,
       payload.maxDeviation||0.1, fullShapeEdgeHashes, fullShapeFaceHashes);
     sceneShapes = [];
     postMessage({ "type": "Progress", "payload": { "opNumber": opNumber, "opType": "" } }); // Finish the progress
